@@ -3,11 +3,7 @@ using System.Drawing;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using ZedGraph;
-//эпсилон 10^-3, 10^-6
-//подкрутить precision
-//сообщения для NaN
-//delete extra usings
-//какой шаг?
+
 namespace dichotomy
 {
     public partial class Form1 : Form
@@ -30,16 +26,40 @@ namespace dichotomy
                     precision = Convert.ToDouble(textBoxE.Text),
                     userExpression = textBoxExpression.Text
                 };
+                
+                if (double.IsNaN(expression.getPointY(expression.a)))
+                {
+                    throw new Exception("Неверно записана F(x)!");
+                }
+
+                if (expression.precision <= 0)
+                {
+                    throw new Exception("Неверно записана точность!");
+                }
+
+                if (expression.a >= expression.b)
+                {
+                    throw new Exception("A не может быть больше или равна B!");
+                }
 
                 Task<PointPairList> getPoints = expression.getGraphPoints();
                 LineItem curve = pane.AddCurve(expression.userExpression, await getPoints, Color.Purple, SymbolType.None);
-                textBoxMinPointY.Text = expression.findMinPoint().ToString();
+
+                Task<PointPairList> getMinPointCoords = expression.getMinPointCoords();
+                LineItem minPoint = pane.AddCurve("", await getMinPointCoords, Color.BlueViolet, SymbolType.Circle);
+                textBoxMinPointX.Text = getMinPointCoords.Result[0].X.ToString();
+                textBoxMinPointY.Text = getMinPointCoords.Result[0].Y.ToString();
+
                 zedGraphControl.AxisChange();
                 zedGraphControl.Refresh();
             }
             catch (FormatException)
             {
                 MessageBox.Show("Заполните пустые поля!");
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show(exception.Message);
             }
         }
         private void clearAllStripMenuItem_Click(object sender, EventArgs e)
