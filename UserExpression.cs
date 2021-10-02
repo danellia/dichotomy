@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using org.mariuszgromada.math.mxparser;
 using ZedGraph;
@@ -11,7 +12,7 @@ namespace dichotomy
         public double b { get; set; }
         public double precision { get; set; }
         public string userExpression { get; set; }
-        public double step = 1;
+        int step = 1;
 
         public Task<PointPairList> getGraphPoints()
         {
@@ -42,6 +43,11 @@ namespace dichotomy
                 double rightY = getPointY(b);
                 double middleX = (leftX + rightX) / 2;
                 double middleY = getPointY(middleX);
+                if (double.IsNaN(getPointY(middleX)))
+                {
+                    middleX -= precision;
+                    middleY = getPointY(middleX);
+                }
 
                 while (Math.Abs(rightY - leftY) > precision)
                 {
@@ -56,8 +62,13 @@ namespace dichotomy
                     leftY = getPointY(leftX);
                     rightY = getPointY(rightX);
                     middleX = (leftX + rightX) / 2;
+                    if (double.IsNaN(getPointY(middleX)))
+                    {
+                        middleX -= precision;
+                    }
                     middleY = getPointY(middleX);
                 }
+
                 PointPairList minPointList = new PointPairList();
                 minPointList.Add(new PointPair(middleX, middleY));
                 return minPointList;

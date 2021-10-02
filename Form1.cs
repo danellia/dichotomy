@@ -44,13 +44,18 @@ namespace dichotomy
 
                 Task<PointPairList> getPoints = expression.getGraphPoints();
                 LineItem curve = pane.AddCurve(expression.userExpression, await getPoints, Color.Purple, SymbolType.None);
+                zedGraphControl.AxisChange();
+                zedGraphControl.Refresh();
 
                 Task<PointPairList> getMinPointCoords = expression.getMinPointCoords();
                 LineItem minPoint = pane.AddCurve("", await getMinPointCoords, Color.BlueViolet, SymbolType.Circle);
                 textBoxMinPointX.Text = getMinPointCoords.Result[0].X.ToString();
                 textBoxMinPointY.Text = getMinPointCoords.Result[0].Y.ToString();
 
-                zedGraphControl.AxisChange();
+                if(getPoints.Result.Contains(getMinPointCoords.Result[0]))
+                {
+                    zedGraphControl.AxisChange();
+                }
                 zedGraphControl.Refresh();
             }
             catch (FormatException)
