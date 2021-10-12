@@ -37,42 +37,33 @@ namespace dichotomy
         {
             return Task.Run(() =>
             {
-                double leftX = a;
-                double leftY = getPointY(a);
-                double rightX = b;
-                double rightY = getPointY(b);
-                double middleX = (leftX + rightX) / 2;
-                double middleY = getPointY(middleX);
-                if (double.IsNaN(getPointY(middleX)))
+                double middleX = 0;
+                double middleY = 0;
+                while (Math.Abs(getPointY(b) - getPointY(a)) > precision)
                 {
-                    middleX -= precision;
-                    middleY = getPointY(middleX);
-                }
-
-                while (Math.Abs(rightY - leftY) > precision)
-                {
-                    if (leftY > rightY)
-                    {
-                        leftX = middleX;
-                    }
-                    else
-                    {
-                        rightX = middleX;
-                    }
-                    leftY = getPointY(leftX);
-                    rightY = getPointY(rightX);
-                    middleX = (leftX + rightX) / 2;
+                    middleX = (a + b) / 2;
                     if (double.IsNaN(getPointY(middleX)))
                     {
                         middleX -= precision;
                     }
                     middleY = getPointY(middleX);
+                    if (getPointY(a) > getPointY(b))
+                    {
+                        a = middleX;
+                    }
+                    else
+                    {
+                        b = middleX;
+                    }
                 }
-
                 PointPairList minPointList = new PointPairList();
-                minPointList.Add(new PointPair(middleX, middleY));
+                minPointList.Add(new PointPair(round(middleX), round(middleY)));
                 return minPointList;
             });
+        }
+        private double round(double coord)
+        {
+            return Math.Round(coord, precision.ToString().Length - 2);
         }
     }
 }

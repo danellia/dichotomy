@@ -52,7 +52,7 @@ namespace dichotomy
                 textBoxMinPointX.Text = getMinPointCoords.Result[0].X.ToString();
                 textBoxMinPointY.Text = getMinPointCoords.Result[0].Y.ToString();
 
-                if(getPoints.Result.Contains(getMinPointCoords.Result[0]))
+                if (getPoints.Result.Contains(getMinPointCoords.Result[0]))
                 {
                     zedGraphControl.AxisChange();
                 }
